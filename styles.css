@@ -54,8 +54,19 @@ body {
     outline: 2px solid yellow;
 }
 
+#scoreboard {
+    display: flex;
+    justify-content: space-between;
+    width: 500px;
+    margin-bottom: 20px;
+}
+
+.scoreboard-section {
+    width: 240px;
+}
+
 #history {
-    width: 400px;
+    width: 500px;
     max-height: 400px;
     overflow-y: auto;
 }

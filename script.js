@@ -3,10 +3,23 @@ const statusDisplay = document.getElementById('status');
 const moveHistoryDisplay = document.getElementById('moveHistory');
 const whitePlayerInput = document.getElementById('whitePlayer');
 const blackPlayerInput = document.getElementById('blackPlayer');
+const whiteCapturesDisplay = document.getElementById('whiteCaptures');
+const blackCapturesDisplay = document.getElementById('blackCaptures');
+const whiteScoreDisplay = document.getElementById('whiteScore');
+const blackScoreDisplay = document.getElementById('blackScore');
 const boardSize = 8;
 const pieces = {
     'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟︎',
     'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
+};
+
+const pieceValues = {
+    'p': 1, 'P': 1,
+    'r': 5, 'R': 5,
+    'n': 3, 'N': 3,
+    'b': 3, 'B': 3,
+    'q': 9, 'Q': 9,
+    'k': 0, 'K': 0
 };
 
 const initialBoard = [
@@ -25,6 +38,10 @@ let selectedPiece = null;
 let selectedPieceIndex = null;
 let isWhiteTurn = true;
 let moveHistory = [];
+let whiteCaptures = [];
+let blackCaptures = [];
+let whiteScore = 0;
+let blackScore = 0;
 
 function createBoard() {
     chessBoard.innerHTML = '';
@@ -110,7 +127,7 @@ function getPawnMoves(index) {
 
 function getRookMoves(index) {
     const moves = [];
-    const directions = [-1, 1, -boardSize, boardSize];
+    const directions = [-8, 8, -1, 1];
     directions.forEach(direction => {
         for (let i = index + direction; isValidMove(i, direction); i += direction) {
             if (board[i] === '') {
@@ -136,7 +153,7 @@ function getKnightMoves(index) {
         const targetIndex = index + move;
         const targetRow = Math.floor(targetIndex / boardSize);
         const targetCol = targetIndex % boardSize;
-        if (targetIndex >= 0 && targetIndex < 64 && Math.abs(row - targetRow) <= 2 && Math.abs(col - targetCol) <= 2) {
+        if (targetIndex >= 0 && targetIndex < 64 && Math.abs(row - targetRow) <= 2 && Math.abs(col - targetCol) <= 2 && (Math.abs(row - targetRow) + Math.abs(col - targetCol) === 3)) {
             if (board[targetIndex] === '' || board[targetIndex].toLowerCase() !== board[index].toLowerCase()) {
                 moves.push(targetIndex);
             }
@@ -211,6 +228,11 @@ function movePiece(index) {
             to: index,
             piece: board[selectedPieceIndex]
         };
+
+        if (board[index] !== '') {
+            updateScoreboard(board[index]);
+        }
+
         board[index] = selectedPiece;
         board[selectedPieceIndex] = '';
         isWhiteTurn = !isWhiteTurn;
@@ -240,6 +262,24 @@ function getPosition(index) {
     const col = String.fromCharCode('a'.charCodeAt(0) + (index % boardSize));
     const row = boardSize - Math.floor(index / boardSize);
     return `${col}${row}`;
+}
+
+function updateScoreboard(capturedPiece) {
+    const isWhite = capturedPiece === capturedPiece.toUpperCase();
+    const pieceSymbol = pieces[capturedPiece];
+    const pieceValue = pieceValues[capturedPiece];
+
+    if (isWhite) {
+        whiteCaptures.push(pieceSymbol);
+        whiteScore += pieceValue;
+        whiteCapturesDisplay.innerHTML = whiteCaptures.map(piece => `<li>${piece}</li>`).join('');
+        whiteScoreDisplay.textContent = `Score: ${whiteScore}`;
+    } else {
+        blackCaptures.push(pieceSymbol);
+        blackScore += pieceValue;
+        blackCapturesDisplay.innerHTML = blackCaptures.map(piece => `<li>${piece}</li>`).join('');
+        blackScoreDisplay.textContent = `Score: ${blackScore}`;
+    }
 }
 
 createBoard();

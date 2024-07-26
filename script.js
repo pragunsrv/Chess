@@ -57,42 +57,120 @@ function highlightMoves(index) {
 }
 
 function getPossibleMoves(index) {
+    const piece = initialPieces[index];
+    switch (piece.toLowerCase()) {
+        case 'p': return getPawnMoves(index);
+        case 'r': return getRookMoves(index);
+        case 'n': return getKnightMoves(index);
+        case 'b': return getBishopMoves(index);
+        case 'q': return getQueenMoves(index);
+        case 'k': return getKingMoves(index);
+        default: return [];
+    }
+}
+
+function getPawnMoves(index) {
+    const moves = [];
+    const piece = initialPieces[index];
+    const direction = piece === 'P' ? -1 : 1;
+    const startRow = piece === 'P' ? 6 : 1;
+    const row = Math.floor(index / boardSize);
+    const col = index % boardSize;
+
+    if (initialPieces[index + direction * boardSize] === '') {
+        moves.push(index + direction * boardSize);
+        if (row === startRow && initialPieces[index + 2 * direction * boardSize] === '') {
+            moves.push(index + 2 * direction * boardSize);
+        }
+    }
+    if (col > 0 && initialPieces[index + direction * boardSize - 1] && initialPieces[index + direction * boardSize - 1].toLowerCase() !== piece.toLowerCase()) {
+        moves.push(index + direction * boardSize - 1);
+    }
+    if (col < 7 && initialPieces[index + direction * boardSize + 1] && initialPieces[index + direction * boardSize + 1].toLowerCase() !== piece.toLowerCase()) {
+        moves.push(index + direction * boardSize + 1);
+    }
+
+    return moves;
+}
+
+function getRookMoves(index) {
+    const moves = [];
+    const directions = [-1, 1, -boardSize, boardSize];
+    directions.forEach(direction => {
+        for (let i = index + direction; i >= 0 && i < 64 && Math.abs((i % 8) - (index % 8)) <= 7; i += direction) {
+            if (initialPieces[i] === '') {
+                moves.push(i);
+            } else {
+                if (initialPieces[i].toLowerCase() !== initialPieces[index].toLowerCase()) {
+                    moves.push(i);
+                }
+                break;
+            }
+        }
+    });
+    return moves;
+}
+
+function getKnightMoves(index) {
     const moves = [];
     const piece = initialPieces[index];
     const row = Math.floor(index / boardSize);
     const col = index % boardSize;
+    const knightMoves = [-17, -15, -10, -6, 6, 10, 15, 17];
 
-    if (piece.toLowerCase() === 'p') {
-        const direction = piece === 'P' ? -1 : 1;
-        const startRow = piece === 'P' ? 6 : 1;
-
-        if (initialPieces[index + direction * boardSize] === '') {
-            moves.push(index + direction * boardSize);
-            if (row === startRow && initialPieces[index + 2 * direction * boardSize] === '') {
-                moves.push(index + 2 * direction * boardSize);
+    knightMoves.forEach(move => {
+        const targetIndex = index + move;
+        const targetRow = Math.floor(targetIndex / boardSize);
+        const targetCol = targetIndex % boardSize;
+        if (targetIndex >= 0 && targetIndex < 64 && Math.abs(row - targetRow) <= 2 && Math.abs(col - targetCol) <= 2) {
+            if (initialPieces[targetIndex] === '' || initialPieces[targetIndex].toLowerCase() !== piece.toLowerCase()) {
+                moves.push(targetIndex);
             }
         }
-        if (col > 0 && initialPieces[index + direction * boardSize - 1] && initialPieces[index + direction * boardSize - 1].toLowerCase() !== piece.toLowerCase()) {
-            moves.push(index + direction * boardSize - 1);
-        }
-        if (col < 7 && initialPieces[index + direction * boardSize + 1] && initialPieces[index + direction * boardSize + 1].toLowerCase() !== piece.toLowerCase()) {
-            moves.push(index + direction * boardSize + 1);
-        }
-    } else if (piece.toLowerCase() === 'n') {
-        const knightMoves = [
-            -17, -15, -10, -6, 6, 10, 15, 17
-        ];
-        knightMoves.forEach(move => {
-            const targetIndex = index + move;
-            const targetRow = Math.floor(targetIndex / boardSize);
-            const targetCol = targetIndex % boardSize;
-            if (targetIndex >= 0 && targetIndex < 64 && Math.abs(row - targetRow) <= 2 && Math.abs(col - targetCol) <= 2) {
-                if (initialPieces[targetIndex] === '' || initialPieces[targetIndex].toLowerCase() !== piece.toLowerCase()) {
-                    moves.push(targetIndex);
+    });
+
+    return moves;
+}
+
+function getBishopMoves(index) {
+    const moves = [];
+    const directions = [-9, -7, 7, 9];
+    directions.forEach(direction => {
+        for (let i = index + direction; i >= 0 && i < 64 && Math.abs((i % 8) - (index % 8)) <= 1; i += direction) {
+            if (initialPieces[i] === '') {
+                moves.push(i);
+            } else {
+                if (initialPieces[i].toLowerCase() !== initialPieces[index].toLowerCase()) {
+                    moves.push(i);
                 }
+                break;
             }
-        });
-    }
+        }
+    });
+    return moves;
+}
+
+function getQueenMoves(index) {
+    return [...getRookMoves(index), ...getBishopMoves(index)];
+}
+
+function getKingMoves(index) {
+    const moves = [];
+    const piece = initialPieces[index];
+    const row = Math.floor(index / boardSize);
+    const col = index % boardSize;
+    const kingMoves = [-9, -8, -7, -1, 1, 7, 8, 9];
+
+    kingMoves.forEach(move => {
+        const targetIndex = index + move;
+        const targetRow = Math.floor(targetIndex / boardSize);
+        const targetCol = targetIndex % boardSize;
+        if (targetIndex >= 0 && targetIndex < 64 && Math.abs(row - targetRow) <= 1 && Math.abs(col - targetCol) <= 1) {
+            if (initialPieces[targetIndex] === '' || initialPieces[targetIndex].toLowerCase() !== piece.toLowerCase()) {
+                moves.push(targetIndex);
+            }
+        }
+    });
 
     return moves;
 }

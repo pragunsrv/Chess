@@ -7,6 +7,7 @@ const whiteCapturesDisplay = document.getElementById('whiteCaptures');
 const blackCapturesDisplay = document.getElementById('blackCaptures');
 const whiteScoreDisplay = document.getElementById('whiteScore');
 const blackScoreDisplay = document.getElementById('blackScore');
+const resetButton = document.getElementById('resetButton');
 const boardSize = 8;
 const pieces = {
     'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟︎',
@@ -118,7 +119,7 @@ function getPawnMoves(index) {
     if (col > 0 && row + direction >= 0 && row + direction < boardSize && board[index + direction * boardSize - 1] && board[index + direction * boardSize - 1].toLowerCase() !== piece.toLowerCase()) {
         moves.push(index + direction * boardSize - 1);
     }
-    if (col < 7 && row + direction >= 0 && row + direction < boardSize && board[index + direction * boardSize + 1] && board[index + direction * boardSize + 1].toLowerCase() !== piece.toLowerCase()) {
+    if (col < boardSize - 1 && row + direction >= 0 && row + direction < boardSize && board[index + direction * boardSize + 1] && board[index + direction * boardSize + 1].toLowerCase() !== piece.toLowerCase()) {
         moves.push(index + direction * boardSize + 1);
     }
 
@@ -242,6 +243,7 @@ function movePiece(index) {
         selectedPiece = null;
         selectedPieceIndex = null;
         clearHighlights();
+        checkGameStatus();
     }
 }
 
@@ -281,5 +283,31 @@ function updateScoreboard(capturedPiece) {
         blackScoreDisplay.textContent = `Score: ${blackScore}`;
     }
 }
+
+function checkGameStatus() {
+    // Placeholder for future check/checkmate logic
+    console.log("Check game status");
+}
+
+function resetGame() {
+    board = initialBoard.slice();
+    selectedPiece = null;
+    selectedPieceIndex = null;
+    isWhiteTurn = true;
+    moveHistory = [];
+    whiteCaptures = [];
+    blackCaptures = [];
+    whiteScore = 0;
+    blackScore = 0;
+    statusDisplay.textContent = `${whitePlayerInput.value || "White"}'s turn`;
+    updateBoard();
+    whiteCapturesDisplay.innerHTML = '';
+    blackCapturesDisplay.innerHTML = '';
+    whiteScoreDisplay.textContent = 'Score: 0';
+    blackScoreDisplay.textContent = 'Score: 0';
+    moveHistoryDisplay.innerHTML = '';
+}
+
+resetButton.addEventListener('click', resetGame);
 
 createBoard();

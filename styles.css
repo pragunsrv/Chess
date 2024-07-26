@@ -24,6 +24,13 @@ body {
     font-weight: bold;
 }
 
+#resetButton {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
 .chess-board {
     display: grid;
     grid-template-columns: repeat(8, 60px);

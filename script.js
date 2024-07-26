@@ -7,14 +7,14 @@ const pieces = {
 };
 
 const initialBoard = [
-    'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R',
-    'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
-    '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '',
-    '', '', '', '', '', '', '', '',
+    'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r',
     'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p',
-    'r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '',
+    '', '', '', '', '', '', '', '',
+    'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P',
+    'R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'
 ];
 
 let board = initialBoard.slice();
@@ -84,16 +84,20 @@ function getPawnMoves(index) {
     const row = Math.floor(index / boardSize);
     const col = index % boardSize;
 
-    if (board[index + direction * boardSize] === '') {
+    // Move one square forward
+    if (row + direction >= 0 && row + direction < boardSize && board[index + direction * boardSize] === '') {
         moves.push(index + direction * boardSize);
+        // Move two squares forward from the starting position
         if (row === startRow && board[index + 2 * direction * boardSize] === '') {
             moves.push(index + 2 * direction * boardSize);
         }
     }
-    if (col > 0 && board[index + direction * boardSize - 1] && board[index + direction * boardSize - 1].toLowerCase() !== piece.toLowerCase()) {
+
+    // Capture diagonally
+    if (col > 0 && row + direction >= 0 && row + direction < boardSize && board[index + direction * boardSize - 1] && board[index + direction * boardSize - 1].toLowerCase() !== piece.toLowerCase()) {
         moves.push(index + direction * boardSize - 1);
     }
-    if (col < 7 && board[index + direction * boardSize + 1] && board[index + direction * boardSize + 1].toLowerCase() !== piece.toLowerCase()) {
+    if (col < 7 && row + direction >= 0 && row + direction < boardSize && board[index + direction * boardSize + 1] && board[index + direction * boardSize + 1].toLowerCase() !== piece.toLowerCase()) {
         moves.push(index + direction * boardSize + 1);
     }
 
@@ -104,7 +108,7 @@ function getRookMoves(index) {
     const moves = [];
     const directions = [-1, 1, -boardSize, boardSize];
     directions.forEach(direction => {
-        for (let i = index + direction; i >= 0 && i < 64 && Math.abs((i % 8) - (index % 8)) <= 7; i += direction) {
+        for (let i = index + direction; isValidMove(i, direction); i += direction) {
             if (board[i] === '') {
                 moves.push(i);
             } else {
@@ -142,7 +146,7 @@ function getBishopMoves(index) {
     const moves = [];
     const directions = [-9, -7, 7, 9];
     directions.forEach(direction => {
-        for (let i = index + direction; i >= 0 && i < 64 && Math.abs((i % 8) - (index % 8)) <= 1; i += direction) {
+        for (let i = index + direction; isValidMove(i, direction); i += direction) {
             if (board[i] === '') {
                 moves.push(i);
             } else {
@@ -180,6 +184,18 @@ function getKingMoves(index) {
     return moves;
 }
 
+function isValidMove(targetIndex, direction) {
+    const startRow = Math.floor(targetIndex / boardSize);
+    const startCol = targetIndex % boardSize;
+    const endRow = Math.floor((targetIndex + direction) / boardSize);
+    const endCol = (targetIndex + direction) % boardSize;
+
+    if (direction === 1 && (endCol === 0 || endCol === 7)) return false;
+    if (direction === -1 && (startCol === 0 || startCol === 7)) return false;
+
+    return true;
+}
+
 function clearHighlights() {
     Array.from(chessBoard.children).forEach(square => square.classList.remove('highlight'));
 }
@@ -190,11 +206,11 @@ function movePiece(index) {
         board[index] = selectedPiece;
         isWhiteTurn = !isWhiteTurn;
         statusDisplay.textContent = isWhiteTurn ? "White's turn" : "Black's turn";
+        updateBoard();
+        selectedPiece = null;
+        selectedPieceIndex = null;
+        clearHighlights();
     }
-    selectedPiece = null;
-    selectedPieceIndex = null;
-    clearHighlights();
-    updateBoard();
 }
 
 function updateBoard() {

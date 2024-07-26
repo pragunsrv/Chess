@@ -1,10 +1,18 @@
 body {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #f0d9b5;
     margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+#status {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
 }
 
 .chess-board {
@@ -21,6 +29,7 @@ body {
     justify-content: center;
     align-items: center;
     font-size: 40px;
+    cursor: pointer;
 }
 
 .chess-board .black {
@@ -29,4 +38,8 @@ body {
 
 .chess-board .white {
     background-color: #f0d9b5;
+}
+
+.chess-board .highlight {
+    outline: 2px solid yellow;
 }

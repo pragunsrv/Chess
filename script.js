@@ -1,5 +1,8 @@
 const chessBoard = document.getElementById('chessBoard');
 const statusDisplay = document.getElementById('status');
+const moveHistoryDisplay = document.getElementById('moveHistory');
+const whitePlayerInput = document.getElementById('whitePlayer');
+const blackPlayerInput = document.getElementById('blackPlayer');
 const boardSize = 8;
 const pieces = {
     'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟︎',
@@ -21,6 +24,7 @@ let board = initialBoard.slice();
 let selectedPiece = null;
 let selectedPieceIndex = null;
 let isWhiteTurn = true;
+let moveHistory = [];
 
 function createBoard() {
     chessBoard.innerHTML = '';
@@ -202,11 +206,17 @@ function clearHighlights() {
 
 function movePiece(index) {
     if (chessBoard.children[index].classList.contains('highlight')) {
-        board[selectedPieceIndex] = '';
+        const move = {
+            from: selectedPieceIndex,
+            to: index,
+            piece: board[selectedPieceIndex]
+        };
         board[index] = selectedPiece;
+        board[selectedPieceIndex] = '';
         isWhiteTurn = !isWhiteTurn;
-        statusDisplay.textContent = isWhiteTurn ? "White's turn" : "Black's turn";
+        statusDisplay.textContent = isWhiteTurn ? `${whitePlayerInput.value || "White"}'s turn` : `${blackPlayerInput.value || "Black"}'s turn`;
         updateBoard();
+        addMoveToHistory(move);
         selectedPiece = null;
         selectedPieceIndex = null;
         clearHighlights();
@@ -218,6 +228,18 @@ function updateBoard() {
     for (let i = 0; i < squares.length; i++) {
         squares[i].innerText = pieces[board[i]] || '';
     }
+}
+
+function addMoveToHistory(move) {
+    const moveEntry = document.createElement('li');
+    moveEntry.textContent = `${pieces[move.piece]} moved from ${getPosition(move.from)} to ${getPosition(move.to)}`;
+    moveHistoryDisplay.appendChild(moveEntry);
+}
+
+function getPosition(index) {
+    const col = String.fromCharCode('a'.charCodeAt(0) + (index % boardSize));
+    const row = boardSize - Math.floor(index / boardSize);
+    return `${col}${row}`;
 }
 
 createBoard();

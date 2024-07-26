@@ -1,12 +1,21 @@
 body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     height: 100vh;
     background-color: #f0d9b5;
     margin: 0;
     font-family: Arial, sans-serif;
+}
+
+#playerNames {
+    margin-bottom: 20px;
+}
+
+#playerNames input {
+    margin: 0 10px;
+    padding: 5px;
+    font-size: 16px;
 }
 
 #status {
@@ -20,6 +29,7 @@ body {
     grid-template-columns: repeat(8, 60px);
     grid-template-rows: repeat(8, 60px);
     border: 2px solid #000;
+    margin-bottom: 20px;
 }
 
 .chess-board div {
@@ -42,4 +52,23 @@ body {
 
 .chess-board .highlight {
     outline: 2px solid yellow;
+}
+
+#history {
+    width: 400px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#history h3 {
+    margin-top: 0;
+}
+
+#history ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#history li {
+    margin: 5px 0;
 }
